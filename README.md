@@ -88,7 +88,7 @@ Potential extensions for improved predictive modeling include:
 
 ## 👥 Team Contributions
 * **Kunal Gurtoo** —Kunal contributed to dataset selection, formulated research questions, assisted in data preprocessing review, and developed the introduction and business context.
-* * **Moinuddin K** — Led exploratory data analysis (EDA), implemented regression and Random Forest models, performed statistical evaluation (RMSE, R²), identified and addressed feature leakage, and interpreted modeling results.
+* **Moinuddin K** — Led exploratory data analysis (EDA), implemented regression and Random Forest models, performed statistical evaluation (RMSE, R²), identified and addressed feature leakage, and interpreted modeling results.
 * **Raj Dave** — Conducted data cleaning and structural validation, generated visualizations (histograms, boxplots, scatterplots), supported model validation, and prepared presentation materials.
 
 ## 💻 How to Run the Project
@@ -96,4 +96,5 @@ Potential extensions for improved predictive modeling include:
 **1. Clone the repository:**
 ```bash
 git clone [https://github.com/moinuddinghouse/MS-AAI-Azure-Analysis.git](https://github.com/moinuddinghouse/MS-AAI-Azure-Analysis.git)
+
 
