@@ -1,26 +1,98 @@
-# MS-AAI-Azure-Analysis: Predicting Latency in Serverless Functions
-**Course:** AAI-500  
-**Institution:** University of San Diego 
+# Azure Functions Performance Analysis
+**End-to-End Statistical Modeling of Serverless Load–Latency Behavior**
 
-## Project Overview
-This repository contains the code, data visualizations, and final technical report for our statistical analysis of Microsoft Azure Serverless Functions. The primary objective of this project is to determine if invocation load (`Count`) can accurately predict execution latency (`Average` duration) using machine learning models.
+## 📌 Project Overview
+This project presents a complete end-to-end statistical analysis of production-level serverless execution data from the Microsoft Azure Functions Trace 2019 dataset. 
 
-## Repository Structure
-To maintain a clean and reproducible environment, this repository is structured as follows:
+The primary objective is to evaluate whether invocation load (traffic volume) statistically explains variability in execution latency and to assess how accurately latency can be predicted using load-based statistical models.
 
-* `FinalProject.ipynb`: The primary Jupyter Notebook containing the full data pipeline. This includes data cleaning, logarithmic transformations, exploratory data analysis (EDA), and the training/evaluation of the Linear Regression and Random Forest models.
-* `Technical_Report.pdf`: The finalized academic report detailing our statistical methodology, assessment of assumptions, and operational conclusions.
-* `rf_actual_vs_predicted.png`: The generated scatter plot visualizing the Random Forest model's performance and the dispersion of latency predictions.
-* `README.md`: This project overview and structural guide.
+The analysis includes:
+* Data Cleaning and Structural Validation
+* Exploratory Data Analysis (EDA)
+* Regression Modeling
+* Random Forest Modeling
+* Model Evaluation and Statistical Interpretation
+* Identification and mitigation of feature leakage
+* Business insights and operational implications
 
-*(Note: The raw Azure Functions dataset is excluded from this repository to adhere to data privacy and GitHub file-size best practices. The code assumes the data file is placed in the local root directory).*
+## 📊 Research Question
+To what extent does invocation load (Count) statistically explain variability in execution latency (Average Duration), and how accurately can latency be predicted using load-based statistical models?
 
-## Key Statistical Findings
-1. **Target Leakage Identification:** Initial multivariate models utilizing `Minimum` and `Maximum` execution times yielded artificially high R² scores (>0.90). This was identified as target leakage, as these metrics are aggregated concurrently with the target variable (`Average`). They were intentionally discarded to preserve operational validity.
-2. **Model Performance:** The valid models (using only Invocation Load) yielded extremely low explanatory power. The Random Forest model outperformed the Linear baseline but still resulted in an R² of 0.098.
-3. **Operational Conclusion:** The low correlation mathematically proves that Microsoft Azure’s underlying infrastructure effectively decouples scale from speed. Auto-scaling mechanisms successfully provision resources to handle traffic spikes without proportional performance degradation.
+## 🗂 Dataset Information
+* **Source:** Microsoft Azure Functions Trace 2019
+* **Subset Used:** `function_durations_percentiles`
+* **Observations:** ~100,000 production execution records
+* **Variables of Interest:**
+  * `Count` (Invocation Load)
+  * `Average` (Execution Duration in milliseconds)
+  * `Minimum` / `Maximum`
+  * Percentile metrics
+  * Day indicator
 
-## Team Contributors
-* Kunal Gurtoo
-* Moinuddin Ghouse
-* Raj Dave
+*All analysis was conducted on cleaned data after removal of invalid negative latency values.*
+
+## 🧹 Data Preparation
+Preprocessing steps included:
+* Structural validation of dataset dimensions and variable types
+* Missing value audit (none detected)
+* Removal of invalid negative execution duration values
+* Retention of legitimate extreme outliers to preserve production realism
+* Log(1 + x) transformation applied due to extreme right-skewness
+* Train–test split (80/20 hold-out method)
+
+*The preprocessing strategy preserved real-world workload variability while ensuring statistical validity.*
+
+## 📈 Exploratory Data Analysis (EDA)
+Key findings:
+* Heavy-tailed distribution in both invocation load and execution latency
+* Skewness (Count ≈ 106, Average ≈ 9) indicating extreme right asymmetry
+* Near-zero Pearson correlation between load and latency (≈ -0.005)
+* Evidence of heteroscedasticity at higher load levels
+* Log transformation significantly improved interpretability and variance stability
+
+*These findings motivated the modeling approach adopted in the next stage.*
+
+## 🤖 Modeling Approach
+Two primary models were evaluated:
+
+**1️⃣ Linear Regression (Baseline Model)**
+* Log–Log specification
+* RMSE ≈ 2.42
+* R² ≈ 0.053
+
+**2️⃣ Random Forest Regressor (Challenger Model)**
+* 50 decision trees
+* Maximum depth = 10
+* RMSE ≈ 2.36
+* R² ≈ 0.098
+
+*Note: An exploratory multivariate regression initially produced an inflated R² (> 0.93). However, this was identified as **feature leakage**, as it included latency-derived predictors (Minimum and Maximum). That model was intentionally discarded to preserve predictive integrity and real-world applicability. Final models strictly used invocation load as the explanatory predictor.*
+
+## 📉 Key Results
+* Invocation load explains **less than 10%** of latency variability.
+* Random Forest slightly outperforms linear regression but still demonstrates limited explanatory power.
+* Azure’s serverless architecture appears to effectively decouple traffic scale from execution latency.
+* Latency variability is likely influenced by infrastructure-level factors such as cold starts, resource allocation, and runtime characteristics.
+
+## 🏢 Business Implications
+* Monitoring traffic volume alone is insufficient for predicting performance degradation.
+* Infrastructure-level metrics are necessary for reliable forecasting.
+* Azure auto-scaling mechanisms appear effective at preventing proportional latency increases during traffic spikes.
+
+## 🔬 Future Work
+Potential extensions for improved predictive modeling include:
+* Time-since-last-invocation (Cold Start modeling)
+* Memory allocation and runtime environment variables
+* Plan tier differentiation (Consumption vs Premium)
+* Concurrency and scaling metrics
+
+## 👥 Team Contributions
+* **Kunal Gurtoo** —Kunal contributed to dataset selection, formulated research questions, assisted in data preprocessing review, and developed the introduction and business context.
+* * **Moinuddin K** — Led exploratory data analysis (EDA), implemented regression and Random Forest models, performed statistical evaluation (RMSE, R²), identified and addressed feature leakage, and interpreted modeling results.
+* **Raj Dave** — Conducted data cleaning and structural validation, generated visualizations (histograms, boxplots, scatterplots), supported model validation, and prepared presentation materials.
+
+## 💻 How to Run the Project
+
+**1. Clone the repository:**
+```bash
+git clone [https://github.com/moinuddinghouse/MS-AAI-Azure-Analysis.git](https://github.com/moinuddinghouse/MS-AAI-Azure-Analysis.git)
